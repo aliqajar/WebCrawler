@@ -63,7 +63,7 @@ services:
       - redis
       - postgresql
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_SERVERS=kafka:9092
       - REDIS_URL=redis://redis:6379
       - DATABASE_URL=postgresql://crawler:crawler123@postgresql:5432/webcrawler
     volumes:
@@ -76,10 +76,71 @@ services:
       - redis
       - url-frontier
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_SERVERS=kafka:9092
       - REDIS_URL=redis://redis:6379
     volumes:
       - ./services/url-scheduler:/app
+
+  # Fetcher Shards (Horizontally Scalable)
+  fetcher-shard-0:
+    build: ./services/fetcher
+    depends_on:
+      - kafka
+      - redis
+      - url-scheduler
+    environment:
+      - FETCHER_SHARD_ID=0
+      - KAFKA_SERVERS=kafka:9092
+      - REDIS_URL=redis://redis:6379
+      - CONCURRENT_REQUESTS=20
+      - FETCH_BATCH_SIZE=10
+    volumes:
+      - ./services/fetcher:/app
+
+  fetcher-shard-1:
+    build: ./services/fetcher
+    depends_on:
+      - kafka
+      - redis
+      - url-scheduler
+    environment:
+      - FETCHER_SHARD_ID=1
+      - KAFKA_SERVERS=kafka:9092
+      - REDIS_URL=redis://redis:6379
+      - CONCURRENT_REQUESTS=20
+      - FETCH_BATCH_SIZE=10
+    volumes:
+      - ./services/fetcher:/app
+
+  fetcher-shard-2:
+    build: ./services/fetcher
+    depends_on:
+      - kafka
+      - redis
+      - url-scheduler
+    environment:
+      - FETCHER_SHARD_ID=2
+      - KAFKA_SERVERS=kafka:9092
+      - REDIS_URL=redis://redis:6379
+      - CONCURRENT_REQUESTS=20
+      - FETCH_BATCH_SIZE=10
+    volumes:
+      - ./services/fetcher:/app
+
+  fetcher-shard-3:
+    build: ./services/fetcher
+    depends_on:
+      - kafka
+      - redis
+      - url-scheduler
+    environment:
+      - FETCHER_SHARD_ID=3
+      - KAFKA_SERVERS=kafka:9092
+      - REDIS_URL=redis://redis:6379
+      - CONCURRENT_REQUESTS=20
+      - FETCH_BATCH_SIZE=10
+    volumes:
+      - ./services/fetcher:/app
 
 volumes:
   redis_data:
