@@ -1,0 +1,9 @@
+asyncio-mqtt==0.16.1
+aioredis==2.0.1
+kafka-python==2.0.2
+urllib3==2.0.7
+pydantic==2.5.0
+python-dotenv==1.0.0
+loguru==0.7.2
+aiohttp==3.9.1
+robotparser==1.0.0 

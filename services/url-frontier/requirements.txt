@@ -1,0 +1,13 @@
+asyncio-mqtt==0.16.1
+asyncpg==0.29.0
+redis==5.0.1
+kafka-python==2.0.2
+aioredis==2.0.1
+urllib3==2.0.7
+fuzzywuzzy==0.18.0
+python-levenshtein==0.21.1
+bloom-filter2==2.0.0
+mmh3==4.0.1
+pydantic==2.5.0
+python-dotenv==1.0.0
+loguru==0.7.2 
