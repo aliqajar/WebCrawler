@@ -1,0 +1,12 @@
+elasticsearch==8.11.1
+redis==5.0.1
+kafka-python==2.0.2
+aiofiles==23.2.0
+asyncio-throttle==1.0.2
+python-dateutil==2.8.2
+urllib3==2.1.0
+certifi==2023.11.17
+hashlib-compat==1.0.1
+textdistance==4.6.0
+Levenshtein==0.23.0
+numpy==1.24.3 

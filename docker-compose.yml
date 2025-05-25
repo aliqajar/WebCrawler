@@ -142,6 +142,72 @@ services:
     volumes:
       - ./services/fetcher:/app
 
+  # Parser Service
+  parser:
+    build: ./services/parser
+    depends_on:
+      - kafka
+      - redis
+      - fetcher-shard-0
+      - fetcher-shard-1
+      - fetcher-shard-2
+      - fetcher-shard-3
+    environment:
+      - KAFKA_SERVERS=kafka:9092
+      - REDIS_URL=redis://redis:6379
+      - PROCESSING_BATCH_SIZE=10
+      - MIN_CONTENT_LENGTH=100
+    volumes:
+      - ./services/parser:/app
+
+  # Content Indexer Service
+  indexer:
+    build: ./services/indexer
+    container_name: webcrawler_indexer
+    environment:
+      - KAFKA_SERVERS=kafka:9092
+      - REDIS_URL=redis://redis:6379
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - PROCESSING_BATCH_SIZE=10
+      - BULK_INDEX_SIZE=100
+    depends_on:
+      - kafka
+      - redis
+      - elasticsearch
+      - parser
+    networks:
+      - webcrawler_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8080/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Search API Service
+  search-api:
+    build: ./services/search-api
+    container_name: webcrawler_search_api
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - "8000:8000"
+    depends_on:
+      - elasticsearch
+      - redis
+      - indexer
+    networks:
+      - webcrawler_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
 volumes:
   redis_data:
   postgres_data:
